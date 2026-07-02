@@ -29,8 +29,8 @@ from features import extract_features
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_curve, roc_auc_score
 
-REAL_DIR = "data/real"
-SCREEN_DIR = "data/fake"
+REAL_DIR = "data/r2"
+SCREEN_DIR = "data/f2"
 
 
 def load_dataset():

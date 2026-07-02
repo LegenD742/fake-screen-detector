@@ -65,10 +65,10 @@ if __name__ == "__main__":
         make_natural_like(f"synthetic/real_{i}.png", seed=i)
         make_screen_like(f"synthetic/screen_{i}.png", seed=i)
 
-    print(f"\n{'file':<20} {'moire':>8} {'highlight':>10} {'banding':>8}")
+    print(f"\n{'file':<20} {'pixelgrid':>8} {'banding':>8}")
     print("-" * 50)
     for i in range(5):
         for kind in ["real", "screen"]:
             path = f"synthetic/{kind}_{i}.png"
             f = extract_features(path)
-            print(f"{path:<20} {f['moire']:>8.3f} {f['highlight']:>10.3f} {f['banding']:>8.3f}")
+            print(f"{path:<20} {f['pixelgrid']:>8.3f} {f['banding']:>8.3f}")

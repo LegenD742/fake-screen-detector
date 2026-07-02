@@ -18,7 +18,7 @@ import sys
 from features import extract_features
 
 # Default weights -- overwritten by calibrate.py once real data is available.
-WEIGHTS = {"moire": 0.5, "highlight": 0.3, "banding": 0.2}
+WEIGHTS = {"pixelgrid": 0.66, "banding": 0.34}
 BIAS = 0.0
 
 

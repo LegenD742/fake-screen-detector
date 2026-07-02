@@ -1,15 +1,3 @@
-"""
-Feature extraction for real-photo vs screen-recapture detection.
-
-Three independent, cheap signals:
-  1. moire_score        -- periodic pixel-grid interference (FFT)
-  2. highlight_score     -- compact specular glare typical of flat glossy screens
-  3. banding_score       -- color/gradient quantization typical of a display
-
-Each returns a float. Higher = more "screen-like" for that signal.
-All operate on a downsampled image for speed.
-"""
-
 import numpy as np
 from PIL import Image, ImageFilter
 from scipy.ndimage import sobel
@@ -187,3 +175,4 @@ def extract_features(path):
         "banding": banding_score(rgb),
         "pixelgrid" : pixel_grid_score(gray),
     }
+

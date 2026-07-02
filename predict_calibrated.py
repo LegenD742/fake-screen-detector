@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 predict_calibrated.py -- real photo vs. screen-recapture detector.
 Weights fitted by calibrate.py on local labeled data.
@@ -12,9 +11,9 @@ Usage:
 import sys
 from features import extract_features
 
-COEF = {"banding": 0.469147,"pixelgrid" : -0.875906}
-INTERCEPT = 0.332748
-THRESHOLD = 0.488845
+COEF = {"banding": 0.507830,"pixelgrid" : -0.913214}
+INTERCEPT = 0.341730
+THRESHOLD = 0.514330
 
 
 def predict(path):
