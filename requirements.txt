@@ -1,0 +1,7 @@
+joblib
+narwhals
+numpy
+pillow
+scikit-learn
+scipy
+threadpoolctl
