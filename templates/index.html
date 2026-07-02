@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ScreenGuard AI</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+
+    background:linear-gradient(135deg,#edf4ff,#f7fbff);
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+.container{
+
+    width:760px;
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:40px;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.12);
+
+    animation:fadeUp .6s ease;
+
+}
+
+@keyframes fadeUp{
+
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
+}
+
+.logo{
+
+    width:65px;
+    height:65px;
+
+    border-radius:50%;
+
+    background:#2979ff;
+
+    color:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:28px;
+
+    margin:auto;
+
+    margin-bottom:15px;
+
+    box-shadow:0 10px 25px rgba(41,121,255,.35);
+
+}
+
+h1{
+
+    text-align:center;
+
+    color:#1f2937;
+
+}
+
+.subtitle{
+
+    text-align:center;
+
+    color:#666;
+
+    margin-top:8px;
+
+    margin-bottom:30px;
+
+}
+
+.upload{
+
+    border:2px dashed #2979ff;
+
+    border-radius:15px;
+
+    padding:35px;
+
+    text-align:center;
+
+    transition:.3s;
+
+}
+
+.upload:hover{
+
+    background:#f3f8ff;
+
+    transform:scale(1.01);
+
+}
+
+input[type=file]{
+
+    margin-top:20px;
+
+}
+
+button{
+
+    margin-top:25px;
+
+    background:#2979ff;
+
+    color:white;
+
+    border:none;
+
+    padding:14px 32px;
+
+    border-radius:8px;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+button:hover{
+
+    background:#165fd6;
+
+    transform:translateY(-2px);
+
+}
+
+.result{
+
+    margin-top:35px;
+
+    text-align:center;
+
+    animation:fadeUp .5s;
+
+}
+
+.result img{
+
+    width:100%;
+
+    max-width:480px;
+
+    border-radius:15px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.18);
+
+}
+
+.badge{
+
+    display:inline-block;
+
+    margin-top:25px;
+
+    padding:10px 24px;
+
+    border-radius:999px;
+
+    color:white;
+
+    font-weight:600;
+
+    font-size:18px;
+
+}
+
+.real{
+
+    background:#16a34a;
+
+}
+
+.screen{
+
+    background:#dc2626;
+
+}
+
+.score{
+
+    margin-top:18px;
+
+    font-size:22px;
+
+    color:#1f2937;
+
+}
+
+.progress{
+
+    width:100%;
+
+    height:14px;
+
+    background:#e5e7eb;
+
+    border-radius:50px;
+
+    overflow:hidden;
+
+    margin-top:18px;
+
+}
+
+.progress-fill{
+
+    height:100%;
+
+    background:linear-gradient(90deg,#2979ff,#00c6ff);
+
+    transition:width 1s ease;
+
+}
+
+.footer{
+
+    margin-top:35px;
+
+    text-align:center;
+
+    color:#888;
+
+    font-size:13px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logo">
+
+🛡
+
+</div>
+
+<h1>ScreenGuard AI</h1>
+
+<div class="subtitle">
+
+Detect whether an uploaded image is a genuine photograph or a recaptured display.
+
+</div>
+
+<form method="POST" enctype="multipart/form-data">
+
+<div class="upload">
+
+<h3>Upload an Image</h3>
+
+<input type="file" name="image" required>
+<p style="margin-top:12px;color:#777;font-size:14px;">
+Supported formats: JPG, JPEG, PNG
+</p>
+
+<br>
+
+<button type="submit">
+
+Analyze Image
+
+</button>
+
+</div>
+
+</form>
+
+{% if image %}
+
+<div class="result">
+
+<img src="/{{image}}">
+
+<br>
+<p style="margin-top:10px;color:#666;">
+{{filename}}
+</p>
+
+<div class="badge {{label.lower()}}">
+
+{{label}}
+
+</div>
+
+<div class="score">
+
+Confidence Score
+
+<b>{{ "%.3f"|format(score) }}</b>
+
+</div>
+
+
+    <div class="progress-fill" style="width:{{score*100}}%"></div>
+</div>
+
+<div style="margin-top:30px;">
+
+    <div style="
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;">
+
+        <div style="
+        background:#f8fafc;
+        padding:20px;
+        border-radius:12px;
+        text-align:center;">
+
+            <div style="font-size:13px;color:#777;">
+                Inference Time
+            </div>
+
+            <div style="font-size:28px;font-weight:600;color:#2563eb;">
+                {{ "%.2f"|format(elapsed) }} ms
+            </div>
+
+        </div>
+
+        <div style="
+        background:#f8fafc;
+        padding:20px;
+        border-radius:12px;
+        text-align:center;">
+
+            <div style="font-size:13px;color:#777;">
+                Estimated Cost
+            </div>
+
+            <div style="font-size:26px;font-weight:600;color:#16a34a;">
+                ${{ "%.7f"|format(cloud_cost) }}
+            </div>
+
+            <div style="font-size:12px;color:#777;">
+                per image
+            </div>
+
+        </div>
+
+        <div style="
+        background:#f8fafc;
+        padding:20px;
+        border-radius:12px;
+        text-align:center;">
+
+            <div style="font-size:13px;color:#777;">
+                Deployment
+            </div>
+
+            <div style="font-size:26px;font-weight:600;color:#7c3aed;">
+                CPU Only
+            </div>
+
+            <div style="font-size:12px;color:#777;">
+                Classical CV
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+<div class="footer">
+
+A Computer Vision Experiment !!
+
+</div>
+
+</div>
+
+</body>
+
+</html>

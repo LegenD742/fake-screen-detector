@@ -1,23 +1,17 @@
-"""
-predict.py -- real photo vs. screen-recapture detector.
+# predict.py -- real photo vs. screen-recapture detector.
 
-Usage:
-    python predict.py some_image.jpg
-    -> prints a single float in [0, 1]: 0 = real photo, 1 = photo of a screen.
+# To use this file independentally :
+#    python predict.py yourimgname.jpg
+#    -> prints a single float in [0, 1]: 0 = real photo, 1 = photo of a screen.
 
-No trained deep model. Combines three hand-engineered, fast signals:
-  - moire_score      (FFT periodic pixel-grid interference)
-  - highlight_score  (compact specular glare typical of glossy flat screens)
-  - banding_score    (exact-zero-gradient quantization in smooth regions)
+# No trained deep model. Combines 2 hand engineered, fast signals:
+#  - pixelgrid_score
+#  - banding_score   
 
-Weights and threshold in WEIGHTS/THRESHOLD below are placeholders until
-calibrated on real labeled data via calibrate.py -- see calibrate.py output.
-"""
 
 import sys
 from features import extract_features
 
-# Default weights -- overwritten by calibrate.py once real data is available.
 WEIGHTS = {"pixelgrid": 0.66, "banding": 0.34}
 BIAS = 0.0
 

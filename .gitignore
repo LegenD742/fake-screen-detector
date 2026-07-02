@@ -64,6 +64,8 @@ coverage.xml
 .ruff_cache/
 data/r2/
 data/f2/
+static/
+synthetic/
 
 # ==========================================
 # Jupyter Notebooks

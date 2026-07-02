@@ -1,26 +1,3 @@
-"""
-calibrate.py -- run this LOCALLY on your machine, on your own photos.
-
-Expected folder layout (same folder as this script):
-    data/real/    <- ~50 photos of real objects/scenes
-    data/screen/  <- ~50 photos of a screen or printout showing a picture
-
-What it does:
-    1. Extracts the 3 features (moire, highlight, banding) for every photo
-    2. Fits a logistic regression to combine them into one score
-    3. Picks a decision threshold from the ROC curve (favoring low false-
-       positive rate, i.e. rarely flagging a real photo as fake)
-    4. Reports accuracy, false-positive rate, false-negative rate
-    5. Writes the fitted weights + threshold into predict.py automatically
-    6. Measures average latency per image
-
-Run:
-    python3 calibrate.py
-
-Requires: numpy, scipy, pillow, scikit-learn
-    pip install numpy scipy pillow scikit-learn
-"""
-
 import os
 import time
 import glob
@@ -86,7 +63,6 @@ def measure_latency(paths, n=30):
 def main():
     X, y, paths = load_dataset()
 
-    # simple train/test split (80/20) to get an honest held-out accuracy
     rng = np.random.default_rng(42)
     idx = rng.permutation(len(X))
     split = int(len(X) * 0.8)
@@ -103,9 +79,6 @@ def main():
 
     fpr, tpr, thresholds = roc_curve(y_test, probs_test) if len(set(y_test)) > 1 else (None, None, None)
 
-    # pick threshold targeting low false-positive rate (<=5%), per our
-    # earlier reasoning: wrongly flagging a real photo is the worse error
-    # for a consumer app, absent other business input
     chosen_threshold = 0.5
 
     if fpr is not None:
@@ -143,16 +116,10 @@ def main():
     mean_ms, median_ms, max_ms = measure_latency(paths)
     print(f"Latency per image -- mean: {mean_ms:.1f} ms, median: {median_ms:.1f} ms, max: {max_ms:.1f} ms")
     print("(measured on this machine's CPU -- phone CPUs are typically slower;")
-    print(" treat this as a rough floor, not a phone-accurate number)")
     print()
 
-    # write calibrated predictor
     write_calibrated_predict(coef, intercept, chosen_threshold)
-    print("Wrote calibrated weights into predict_calibrated.py")
     print()
-    print("NOTE: This accuracy is on a small held-out split of YOUR OWN photos,")
-    print("not on the graders' unseen photos. Treat it as an estimate, and be")
-    print("honest in the write-up about the sample size limitation.")
 
 
 def write_calibrated_predict(coef, intercept, threshold):

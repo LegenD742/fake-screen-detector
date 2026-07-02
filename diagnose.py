@@ -1,11 +1,4 @@
-"""
-diagnose.py -- run this LOCALLY, in the same folder as calibrate.py.
-Shows exactly which photos are misclassified, using cross-validation so
-EVERY photo gets an honest out-of-sample prediction (not just a random 20%).
-
-Run:
-    python3 diagnose.py
-"""
+# local indepdnt check
 
 import os
 import glob
@@ -43,9 +36,6 @@ def main():
     y = np.array(y)
     paths = np.array(paths)
 
-    # 5-fold cross-validated predictions: every image is predicted by a
-    # model that never saw it during training -- honest, and uses all
-    # your data instead of wasting most of it on a single train split
     n_splits = min(5, min(np.bincount(y)))
     skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
     clf = LogisticRegression()
@@ -60,8 +50,7 @@ def main():
     print(f"{len(wrong_idx)} misclassified photos:\n")
     print(f"{'file':<45} {'true':<8} {'pred':<8} {'score':<8}")
     print("-" * 75)
-    # sort by how confidently wrong they were (most confident mistakes first --
-    # these are the most informative to go look at)
+    
     wrong_idx = sorted(wrong_idx, key=lambda i: abs(probs[i] - (1 - y[i])))
     for i in wrong_idx:
         true_label = "real" if y[i] == 0 else "screen"
