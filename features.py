@@ -12,6 +12,7 @@ All operate on a downsampled image for speed.
 
 import numpy as np
 from PIL import Image, ImageFilter
+from scipy.ndimage import sobel
 
 MAX_DIM = 512  # downsample target -- plenty of resolution for these signals, keeps it fast
 
@@ -78,6 +79,37 @@ def moire_score(gray):
     raw = 0.15 * peak_z + 40.0 * top_frac
     return float(1.0 - np.exp(-raw / 8.0))
 
+
+def pixel_grid_score(gray):
+    """
+    Detect repetitive vertical/horizontal pixel-grid energy that is common
+    in photos of LCD/OLED screens.
+
+    Returns:
+        0 -> natural image
+        1 -> strong pixel grid
+    """
+
+    gx = sobel(gray, axis=1)
+    gy = sobel(gray, axis=0)
+
+    # average edge strength
+    vert = np.mean(np.abs(gx))
+    hori = np.mean(np.abs(gy))
+
+    # regularity via FFT of edge maps
+    fx = np.abs(np.fft.rfft(np.mean(np.abs(gx), axis=0)))
+    fy = np.abs(np.fft.rfft(np.mean(np.abs(gy), axis=1)))
+
+    fx[0] = 0
+    fy[0] = 0
+
+    peak = max(fx.max(), fy.max())
+    avg = (fx.mean() + fy.mean()) / 2.0 + 1e-6
+
+    score = peak / avg
+
+    return float(np.clip((score - 5.0) / 15.0, 0.0, 1.0))
 
 # ---------------------------------------------------------------------------
 # 2. Specular highlight compactness (screen glare)
@@ -152,7 +184,6 @@ def banding_score(rgb):
 def extract_features(path):
     gray, rgb = load_image(path)
     return {
-        "moire": moire_score(gray),
-        "highlight": highlight_score(rgb),
         "banding": banding_score(rgb),
+        "pixelgrid" : pixel_grid_score(gray),
     }

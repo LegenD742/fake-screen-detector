@@ -50,7 +50,7 @@ def load_dataset():
     for p in real_paths:
         try:
             f = extract_features(p)
-            X.append([f["moire"], f["highlight"], f["banding"]])
+            X.append([f["banding"] , f["pixelgrid"]])
             y.append(0)
             paths.append(p)
         except Exception as e:
@@ -59,7 +59,7 @@ def load_dataset():
     for p in screen_paths:
         try:
             f = extract_features(p)
-            X.append([f["moire"], f["highlight"], f["banding"]])
+            X.append([f["banding"] , f["pixelgrid"]])
             y.append(1)
             paths.append(p)
         except Exception as e:
@@ -107,13 +107,10 @@ def main():
     # earlier reasoning: wrongly flagging a real photo is the worse error
     # for a consumer app, absent other business input
     chosen_threshold = 0.5
+
     if fpr is not None:
-        candidates = [(t, f, tp) for f, tp, t in zip(fpr, tpr, thresholds) if f <= 0.05]
-        if candidates:
-            # among candidates with fpr<=5%, pick the one with highest tpr
-            chosen_threshold = max(candidates, key=lambda c: c[2])[0]
-        else:
-            chosen_threshold = thresholds[np.argmin(fpr)]
+        j = tpr - fpr
+        chosen_threshold = thresholds[np.argmax(j)]
 
     preds_test = (probs_test >= chosen_threshold).astype(int)
     acc = np.mean(preds_test == y_test)
@@ -137,9 +134,8 @@ def main():
     coef = clf.coef_[0]
     intercept = clf.intercept_[0]
     print("Fitted logistic regression:")
-    print(f"  moire weight:     {coef[0]:.4f}")
-    print(f"  highlight weight: {coef[1]:.4f}")
-    print(f"  banding weight:   {coef[2]:.4f}")
+    print(f"  banding weight:   {coef[0]:.4f}")
+    print(f"  pixelgrid weight:   {coef[1]:.4f}")
     print(f"  intercept:        {intercept:.4f}")
     print()
 
@@ -174,7 +170,7 @@ Usage:
 import sys
 from features import extract_features
 
-COEF = {{"moire": {coef[0]:.6f}, "highlight": {coef[1]:.6f}, "banding": {coef[2]:.6f}}}
+COEF = {{"banding": {coef[0]:.6f},"pixelgrid" : {coef[1]:.6f}}}
 INTERCEPT = {intercept:.6f}
 THRESHOLD = {threshold:.6f}
 
